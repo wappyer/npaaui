@@ -45,6 +45,15 @@ return [
             ],
         ],
         */
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'enableStrictParsing' => false,
+            'showScriptName' => false,
+            'rules' => [
+                '<module:\w+>/<controller:\w+>/<id:\d+>' => '<module>/<controller>/view',
+                '<controller:\w+>/<id:\d+>' => '<controller>/view',
+            ],
+        ],
     ],
     'params' => $params,
 ];
