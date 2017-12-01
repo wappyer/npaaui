@@ -57,8 +57,8 @@ class WeChatController extends Controller
             <MsgType><![CDATA[text]]></MsgType>
             <Content><![CDATA[你好]]></Content>
          </xml>*/
-        //1.获取到微信推送过来post数据（xml格式）
-        $postArr = $GLOBALS['HTTP_RAW_POST_DATA'];
+        //1.获取到微信推送过来post数据
+        $postArr = file_get_contents("php://input");
         error_log(var_export($postArr,1));
         //2.处理消息类型，并设置回复类型和内容
         $postObj = simplexml_load_string($postArr);
