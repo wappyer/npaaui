@@ -9,10 +9,24 @@
 namespace backend\controllers;
 
 
+use common\base\NoCsrf;
 use yii\web\Controller;
 
 class WeChatController extends Controller
 {
+    public function behaviors()
+    {
+        return [
+            'verbs' => [
+                'class' => NoCsrf::className(),
+                'controller' => $this,
+                'actions' => [
+                    'index',
+                ],
+            ],
+        ];
+    }
+
     public function actionIndex(){
         //获得参数 signature nonce token timestamp echostr
         $nonce     = $_GET['nonce'];
@@ -70,5 +84,5 @@ class WeChatController extends Controller
             }
         }
     }
-    
+
 }
