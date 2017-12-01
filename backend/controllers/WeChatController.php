@@ -32,16 +32,15 @@ class WeChatController extends Controller
         $nonce     = $_GET['nonce'];
         $token     = 'alice';
         $timestamp = $_GET['timestamp'];
-        $echostr   = $_GET['echostr'];
         $signature = $_GET['signature'];
         //形成数组，然后按字典序排序
         $array = array($nonce, $timestamp, $token);
         sort($array);
         //拼接成字符串,sha1加密 ，然后与signature进行校验
         $str = sha1( implode( $array ) );
-        if( $str  == $signature && $echostr ){
+        if( $str  == $signature && isset($_GET['echostr']) ){
             //第一次接入weixin api接口的时候
-            echo  $echostr;
+            echo  $_GET['echostr'];
             exit;
         }else{
             $this->responseMsg();
@@ -60,8 +59,10 @@ class WeChatController extends Controller
          </xml>*/
         //1.获取到微信推送过来post数据（xml格式）
         $postArr = $GLOBALS['HTTP_RAW_POST_DATA'];
+        error_log(var_export($postArr,1));
         //2.处理消息类型，并设置回复类型和内容
         $postObj = simplexml_load_string($postArr);
+        error_log(var_export($postObj,1));
         //判断该数据包是否是订阅的事件推送
         if (strtolower($postObj->MsgType) == 'event') {
             //如果是关注 subscribe 事件
