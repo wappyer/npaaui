@@ -133,8 +133,32 @@ class WeChatController extends Controller
     public function msg()
     {
         error_log('msg');
+        $message = explode('#', $this->content);
+        switch ($message[0]) {
+            case 'profit' :
+                $capital = $message[1]; //定投金额
+                $interval = $message[2]; //定投周期
+                $yearProfitRate = $message[3]; //预期年化收益率
+                $year = $message[4]; //定投总时长(年)
+
+                $sumDay = $year*365;
+                $cnt = $sumDay/$interval;
+                $profitRate = $yearProfitRate/$cnt;
+                $sum = 0;
+                $sumCapital = 0;
+                for ($i=$cnt; $i>0; $i--) {
+                    $sum += $capital*pow((1+$profitRate), $i);
+                    $sumCapital += $capital;
+                }
+                $sum = round($sum,2);
+                $sumCapital = round($sumCapital,2);
+                $sumProfit = $sum-$sumCapital;
+                $content = "届时\n总资产: $sum\n总储蓄: $sumCapital\n总收益: $sumProfit";
+                break;
+            default :
+                $content = '谢谢您的留言，竹夭在吃提拉米苏，会尽快回复您！';
+        }
         $msgType = 'text';
-        $content = '谢谢您的留言，竹夭在吃提拉米苏，会尽快回复您！';
         $this->response($msgType, $content);
 
     }
