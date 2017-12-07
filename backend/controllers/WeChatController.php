@@ -143,7 +143,7 @@ class WeChatController extends Controller
 
                 $sumDay = $year*365;
                 $cnt = $sumDay/$interval;
-                $profitRate = $yearProfitRate/$cnt;
+                $profitRate = $yearProfitRate/(365/$interval);
                 $sum = 0;
                 $sumCapital = 0;
                 for ($i=$cnt; $i>0; $i--) {
