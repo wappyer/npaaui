@@ -9,11 +9,11 @@
 namespace backend\controllers;
 
 
+use common\base\BaseController;
 use common\base\NoCsrf;
 use common\form\WecharUserForm;
-use yii\web\Controller;
 
-class WeChatController extends Controller
+class WeChatController extends BaseController
 {
     private $postXml;   //接收微信传入的xml
 
@@ -111,7 +111,6 @@ class WeChatController extends Controller
         error_log('index');
         if ($this->msgType == 'event' && $this->event == 'subscribe') {
             //事件，并且是关注事件
-            WecharUserForm::createWechatUser($this->openId, $this->createTime);
             $this->subscribe();
         }
         if ($this->msgType == 'text') {
@@ -124,8 +123,10 @@ class WeChatController extends Controller
     public function subscribe()
     {
         error_log('subscribe');
+        //记录关注人信息
+        WecharUserForm::createWechatUser($this->openId, $this->createTime);
         $msgType = 'text';
-        $content = '欢迎关注';
+        $content = '欢迎关注，望辰砂之言，于尔心有戚戚焉。';
         $this->response($msgType, $content);
     }
 
@@ -133,30 +134,17 @@ class WeChatController extends Controller
     public function msg()
     {
         error_log('msg');
-        $message = explode('#', $this->content);
+        $message = explode(' ', $this->content);
         switch ($message[0]) {
-            case 'profit' :
-                $capital = $message[1]; //定投金额
-                $interval = $message[2]; //定投周期
-                $yearProfitRate = $message[3]; //预期年化收益率
-                $year = $message[4]; //定投总时长(年)
-
-                $sumDay = $year*365;
-                $cnt = $sumDay/$interval;
-                $profitRate = $yearProfitRate/(365/$interval);
-                $sum = 0;
-                $sumCapital = 0;
-                for ($i=$cnt; $i>0; $i--) {
-                    $sum += $capital*pow((1+$profitRate), $i);
-                    $sumCapital += $capital;
-                }
-                $sum = round($sum,2);
-                $sumCapital = round($sumCapital,2);
-                $sumProfit = $sum-$sumCapital;
-                $content = "届时\n总资产: $sum\n总储蓄: $sumCapital\n总收益: $sumProfit";
+            case 'sy' :
+                //收益计算
+                $content = WecharUserForm::profit($message);
+                break;
+            case 'tq' :
+                $content = WecharUserForm::weather($message);
                 break;
             default :
-                $content = '谢谢您的留言，竹夭在吃提拉米苏，会尽快回复您！';
+                $content = '感谢您的留言，竹夭在吃提拉米苏，会尽快回复您！';
         }
         $msgType = 'text';
         $this->response($msgType, $content);
