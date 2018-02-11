@@ -144,7 +144,7 @@ class WeChatController extends BaseController
                 $content = WecharUserForm::weather($message);
                 break;
             default :
-                $content = '感谢您的留言，竹夭在吃提拉米苏，会尽快回复您！';
+                $content = '👏感谢您的留言，辰砂正在沉思，会尽快回复您！';
         }
         $msgType = 'text';
         $this->response($msgType, $content);
